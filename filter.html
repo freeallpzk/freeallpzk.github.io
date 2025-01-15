@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Фильтрация данных</title>
+</head>
+<body>
+
+    <h1>Фильтрация данных</h1>
+
+    <form id="filter-form">
+        <label for="age-range">Возраст:</label>
+        <select id="age-range" name="age-range">
+            <option value="0-20">0-20</option>
+            <option value="21-40">21-40</option>
+            <option value="41-60">41-60</option>
+            <option value="60+">60+</option>
+        </select>
+        <br>
+
+        <label for="hashtags-filter">Хэштеги:</label>
+        <input type="text" id="hashtags-filter" name="hashtags-filter" placeholder="вводите хэштеги через запятую">
+        <br>
+
+        <label for="fio-filter">ФИО:</label>
+        <input type="text" id="fio-filter" name="fio-filter" placeholder="введите ФИО для поиска">
+        <br>
+
+        <button type="submit">Показать</button>
+    </form>
+
+    <h2>Результаты:</h2>
+    <div id="results"></div>
+
+    <script>
+        const form = document.getElementById('filter-form');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const ageRange = document.getElementById('age-range').value;
+            const hashtagsFilter = document.getElementById('hashtags-filter').value.split(',').map(tag => tag.trim());
+            const fioFilter = document.getElementById('fio-filter').value;
+
+            const filters = {
+                ageRange,
+                hashtagsFilter,
+                fioFilter
+            };
+
+            fetch('https://your-server-url.com/get-data', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(filters)
+            })
+            .then(response => response.json())
+            .then(data => {
+                const resultsContainer = document.getElementById('results');
+                resultsContainer.innerHTML = '';  // Clear previous results
+
+                if (data.length === 0) {
+                    resultsContainer.innerHTML = '<p>Нет данных, соответствующих фильтру</p>';
+                } else {
+                    data.forEach(item => {
+                        const resultElem = document.createElement('div');
+                        resultElem.innerHTML = `
+                            <p><strong>ФИО:</strong> ${item.fio}</p>
+                            <p><strong>Возраст:</strong> ${item.age}</p>
+                            <p><strong>Хэштеги:</strong> ${item.hashtags.join(', ')}</p>
+                            <p><strong>Адрес:</strong> ${item.address}</p>
+                            <p><strong>Комментарий:</strong> ${item.comment}</p>
+                            <hr>
+                        `;
+                        resultsContainer.appendChild(resultElem);
+                    });
+                }
+            })
+            .catch(error => alert('Ошибка: ' + error));
+        });
+    </script>
+
+</body>
+</html>
