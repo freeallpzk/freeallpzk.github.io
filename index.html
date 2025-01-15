@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сохранение текста в файл</title>
+</head>
+<body>
+    <h1>Введите текст и сохраните его</h1>
+    <form id="text-form">
+        <textarea id="text" rows="10" cols="30" placeholder="Введите текст здесь..."></textarea>
+        <button type="submit">Сохранить</button>
+    </form>
+    
+    <script>
+        const form = document.getElementById('text-form');
+        
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const text = document.getElementById('text').value;
+            
+            if (text) {
+                fetch('https://example.com/save-text', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content: text })
+                })
+                .then(response => response.text())
+                .then(result => alert('Текст сохранен!'))
+                .catch(error => alert('Ошибка: ' + error));
+            }
+        });
+    </script>
+</body>
+</html>
